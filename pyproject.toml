@@ -76,10 +76,8 @@ Homepage = "https://github.com./NREL/jade"
 [tool.hatch.version]
 path = "jade/__init__.py"
 
-[tool.hatch.build.targets.sdist]
-include = [
-    "/jade",
-]
+[tool.hatch.build.targets.wheel]
+packages = ["jade"]
 
 [tool.black]
 line-length = 99
