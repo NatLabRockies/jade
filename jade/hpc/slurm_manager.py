@@ -3,7 +3,8 @@
 import logging
 import os
 import re
-from datetime import datetime, timedelta
+import tempfile
+from datetime import datetime
 
 from jade.enums import Status
 from jade.exceptions import ExecutionError  # , InvalidConfiguration
@@ -253,7 +254,10 @@ class SlurmManager(HpcManagerInterface):
         return stats
 
     def get_local_scratch(self):
-        return os.environ["LOCAL_SCRATCH"]
+        for key in ("LOCAL_SCRATCH", "TMPDIR"):
+            if key in os.environ:
+                return os.environ[key]
+        return tempfile.gettempdir()
 
     def get_node_id(self):
         return os.environ["SLURM_NODEID"]
