@@ -62,7 +62,6 @@ dev = [
     "sphinx>=2.0",
     "sphinxcontrib-plantuml",
     "statsmodels",
-    "tables",
     "tox",
 ]
 

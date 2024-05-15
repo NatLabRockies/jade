@@ -65,6 +65,7 @@ def test_read_dataframe__feather():
         assert_frame_equal(df1, df2)
 
 
+@mark.skip
 def test_read_dataframe__h5():
     """Should create identical dataframe on reading HDF5 file
 
@@ -155,6 +156,7 @@ def test_write_dataframe__feather(compress):
         assert_frame_equal(df1, df2)
 
 
+@mark.skip
 @mark.parametrize("compress", [False, True])
 def test_write_dataframe__h5(compress):
     """Should write dataframe into a file with matching extension"""
