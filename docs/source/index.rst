@@ -8,13 +8,15 @@
 JADE documentation
 ******************
 
-JADE stands for **Job Automation and Deployment Engine**.
-
 JADE automates parallelized execution of jobs. It has specific support for
 distributing work on HPC compute nodes but can also be executed locally.
 
 The core infrastructure is written in Python, but it allows for each individual
 job to be any executable.
+
+.. warning:: No new features are planned. This project has been supplanted by
+   `Torc <https://github.com/NREL/torc>`_. It has all the functionality of JADE plus
+   a lot more. Please check it out.
 
 Types of Jobs
 =============
