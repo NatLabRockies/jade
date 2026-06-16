@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from jade.models import JadeBaseModel, SubmitterParams
 
@@ -13,6 +13,7 @@ class PipelineStage(JadeBaseModel):
     auto_config_cmd: Optional[str] = Field(
         title="auto_config_cmd",
         description="command used to create the JADE configuration",
+        default=None,
     )
     config_file: str = Field(
         title="config_file",
@@ -25,10 +26,12 @@ class PipelineStage(JadeBaseModel):
     path: Optional[str] = Field(
         title="path",
         description="directory on shared filesystem containing config",
+        default=None,
     )
     return_code: Optional[int] = Field(
         title="return_code",
         description="return code of stage; 0 is success",
+        default=None,
     )
     submitter_params: SubmitterParams = Field(
         title="submitter_params",
@@ -42,6 +45,7 @@ class PipelineConfig(JadeBaseModel):
     path: Optional[str] = Field(
         title="path",
         description="directory on shared filesystem containing config",
+        default=None,
     )
     stage_num: int = Field(
         title="stage_num",

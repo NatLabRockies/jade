@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from jade.utils.utils import load_data
 
@@ -10,14 +10,15 @@ from jade.utils.utils import load_data
 class JadeBaseModel(BaseModel):
     """Base class for JADE models."""
 
-    class Config:
-        title = "JadeBaseModel"
-        anystr_strip_whitespace = True
-        validate_assignment = True
-        validate_all = True
-        extra = "forbid"
-        use_enum_values = False
-        allow_population_by_field_name = True
+    model_config = ConfigDict(
+        title="JadeBaseModel",
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        validate_default=True,
+        extra="forbid",
+        use_enum_values=False,
+        populate_by_name=True,
+    )
 
     @classmethod
     def load(cls, path: Path):

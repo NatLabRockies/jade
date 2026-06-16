@@ -4,7 +4,7 @@ import re
 from datetime import timedelta
 from typing import Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from jade.enums import ResourceMonitorType
 from jade.models import JadeBaseModel, HpcConfig, SingularityParams
@@ -75,7 +75,7 @@ class SubmitterParams(JadeBaseModel):
         description="Script to run on each node after completing jobs",
         default=None,
     )
-    poll_interval: int = Field(
+    poll_interval: float = Field(
         description="Interval in seconds on which to poll jobs for status",
         default=10,
     )
@@ -132,8 +132,8 @@ class SubmitterParams(JadeBaseModel):
             return timedelta(seconds=0xFFFFFFFF)  # largest 8-byte integer
         return _to_timedelta(wall_time)
 
-    def dict(self, *args, **kwargs):
-        data = super().dict(*args, **kwargs)
+    def model_dump(self, *args, **kwargs):
+        data = super().model_dump(*args, **kwargs)
         if data["node_setup_script"] is None:
             data.pop("node_setup_script")
         if data["node_shutdown_script"] is None:

@@ -1,4 +1,4 @@
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from jade.models.base import JadeBaseModel
 from jade.models.hpc import HpcConfig, SlurmConfig, FakeHpcConfig, LocalHpcConfig
@@ -21,5 +21,6 @@ def get_model_defaults(model_class: BaseModel):
 
     """
     return {
-        x: y.get("default") for x, y in model_class.schema(by_alias=False)["properties"].items()
+        x: y.get("default")
+        for x, y in model_class.model_json_schema(by_alias=False)["properties"].items()
     }

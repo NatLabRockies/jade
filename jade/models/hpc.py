@@ -3,7 +3,7 @@
 import re
 from typing import Optional, Union, List
 
-from pydantic.v1 import Field, validator, root_validator, validator
+from pydantic import Field, field_validator, model_validator
 
 from jade.hpc.common import HpcType
 from jade.models.base import JadeBaseModel
@@ -39,6 +39,7 @@ class SlurmConfig(JadeBaseModel):
     gres: Optional[str] = Field(
         title="gpu",
         description="Request nodes that have at least this number of GPUs. Ex: 'gpu:2'",
+        default=None,
     )
     mem: Optional[str] = Field(
         title="mem",
@@ -66,7 +67,8 @@ class SlurmConfig(JadeBaseModel):
         default=None,
     )
 
-    @validator("gres")
+    @field_validator("gres")
+    @classmethod
     def check_gpus(cls, gres):
         if gres is None:
             return gres
@@ -76,21 +78,18 @@ class SlurmConfig(JadeBaseModel):
             )
         return gres
 
-    @root_validator(pre=True)
-    def handle_allocation(cls, values: dict) -> dict:
-        if "allocation" in values:
+    @model_validator(mode="before")
+    @classmethod
+    def handle_allocation(cls, values):
+        if isinstance(values, dict) and "allocation" in values:
             values["account"] = values.pop("allocation")
         return values
 
-    @root_validator
-    def handle_nodes_and_tasks(cls, values: dict) -> dict:
-        if (
-            values["nodes"] is None
-            and values["ntasks"] is None
-            and values["ntasks_per_node"] is None
-        ):
-            values["nodes"] = 1
-        return values
+    @model_validator(mode="after")
+    def handle_nodes_and_tasks(self):
+        if self.nodes is None and self.ntasks is None and self.ntasks_per_node is None:
+            self.nodes = 1
+        return self
 
 
 class FakeHpcConfig(JadeBaseModel):
@@ -124,18 +123,20 @@ class HpcConfig(JadeBaseModel):
         description="Interface-specific config options",
     )
 
-    @validator("hpc", pre=True)
-    def assign_hpc(cls, value, values):
+    @field_validator("hpc", mode="before")
+    @classmethod
+    def assign_hpc(cls, value, info):
         if isinstance(value, JadeBaseModel):
             return value
 
-        if values["hpc_type"] == HpcType.SLURM:
+        hpc_type = info.data["hpc_type"]
+        if hpc_type == HpcType.SLURM:
             return SlurmConfig(**value)
-        elif values["hpc_type"] == HpcType.FAKE:
+        elif hpc_type == HpcType.FAKE:
             return FakeHpcConfig(**value)
-        elif values["hpc_type"] == HpcType.LOCAL:
+        elif hpc_type == HpcType.LOCAL:
             return LocalHpcConfig()
-        raise ValueError(f"Unsupported: {values['hpc_type']}")
+        raise ValueError(f"Unsupported: {hpc_type}")
 
     def get_num_gpus(self):
         """Return the number of GPUs specified by the config.

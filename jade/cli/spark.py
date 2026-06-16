@@ -312,7 +312,7 @@ def config(
             sys.exit(1)
         config = load_data(update_config_file)
         for job in config["jobs"]:
-            job["spark_config"] = spark_config.dict()
+            job["spark_config"] = spark_config.model_dump()
         dump_data(config, update_config_file, indent=2)
         print(f"Updated jobs in {update_config_file} with this Spark configuration.")
     else:
@@ -320,7 +320,7 @@ def config(
             "\nAdd and customize this JSON object to the 'spark_config' field for each Spark "
             "job in your config.json file:\n"
         )
-        print(spark_config.json(indent=2))
+        print(spark_config.model_dump_json(indent=2))
 
 
 def _should_use_gpus(hpc_config, gpu):

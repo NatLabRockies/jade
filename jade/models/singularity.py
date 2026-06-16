@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Optional
 
-from pydantic.v1 import Field, validator
+from pydantic import Field, field_validator
 
 from jade.models import JadeBaseModel
 
@@ -29,6 +29,7 @@ class SingularityParams(JadeBaseModel):
     container: Optional[str] = Field(
         title="container",
         description="Path to Singularity container",
+        default=None,
     )
     load_command: str = Field(
         title="load_command",
@@ -46,9 +47,10 @@ class SingularityParams(JadeBaseModel):
         default=SINGULARITY_SETUP_COMMANDS,
     )
 
-    @validator("container")
-    def check_container(cls, container, values):
-        if values["enabled"]:
+    @field_validator("container")
+    @classmethod
+    def check_container(cls, container, info):
+        if info.data["enabled"]:
             if container is None:
                 raise ValueError("'container' must be set")
             if not Path(container).exists():

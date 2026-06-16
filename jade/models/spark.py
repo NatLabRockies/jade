@@ -1,7 +1,7 @@
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
 
-from pydantic.v1 import Field, root_validator
+from pydantic import Field, model_validator
 
 from jade.models import JadeBaseModel
 
@@ -57,7 +57,7 @@ class SparkConfigModel(JadeBaseModel):
         description="Use node's tmpfs instead of internal storage for scratch space.",
         default=False,
     )
-    alt_scratch: str = Field(
+    alt_scratch: Optional[str] = Field(
         title="alt_scratch",
         description="Use this alternative directory for scratch space.",
         default=None,
@@ -68,11 +68,13 @@ class SparkConfigModel(JadeBaseModel):
         default=0,
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def handle_legacy_values(cls, values):
-        run_outside = values.pop("run_user_script_outside_container", None)
-        if run_outside is not None and "run_user_script_inside_container" not in values:
-            values["run_user_script_inside_container"] = not run_outside
+        if isinstance(values, dict):
+            run_outside = values.pop("run_user_script_outside_container", None)
+            if run_outside is not None and "run_user_script_inside_container" not in values:
+                values["run_user_script_inside_container"] = not run_outside
         return values
 
     def get_spark_script(self):

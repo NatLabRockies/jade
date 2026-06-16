@@ -164,7 +164,7 @@ COMMON_SUBMITTER_OPTIONS = (
         "-m",
         "--resource-monitor-stats",
         multiple=True,
-        type=click.Choice([x for x in ResourceMonitorStats.__fields__]),
+        type=click.Choice([x for x in ResourceMonitorStats.model_fields]),
         help="Resource stats to monitor. Default is CPU and memory. "
         "Ex: -m cpu -m memory -m process",
     ),
@@ -334,7 +334,7 @@ def make_submitter_params(
         resource_monitor_stats = ResourceMonitorStats()
     else:
         stats = {x: True for x in resource_monitor_stats}
-        for field in ResourceMonitorStats.__fields__:
+        for field in ResourceMonitorStats.model_fields:
             if field not in stats:
                 stats[field] = False
         resource_monitor_stats = ResourceMonitorStats(**stats)

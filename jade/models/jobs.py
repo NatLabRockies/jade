@@ -3,7 +3,7 @@
 import enum
 from typing import List, Optional, Set, Union
 
-from pydantic.v1 import Field
+from pydantic import Field, field_validator
 
 from jade.models.base import JadeBaseModel
 
@@ -58,3 +58,8 @@ class JobStatus(JadeBaseModel):
         title="version",
         description="version of the statuses, increments with each update",
     )
+
+    @field_validator("hpc_job_ids", mode="before")
+    @classmethod
+    def coerce_hpc_job_ids(cls, value):
+        return [str(x) for x in value]

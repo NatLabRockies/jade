@@ -293,7 +293,7 @@ class JobConfiguration(abc.ABC):
         must_be_same = ("max_nodes", "poll_interval")
         all_params = (must_be_same, group_params, user_overrides, user_override_if_not_set)
         fields = {item for params in all_params for item in params}
-        assert sorted(list(fields)) == sorted(SubmitterParams.__fields__), sorted(list(fields))
+        assert sorted(list(fields)) == sorted(SubmitterParams.model_fields), sorted(list(fields))
         hpc_type = first_group.submitter_params.hpc_config.hpc_type
         group_names = set()
         for group in self.submission_groups:
@@ -579,7 +579,7 @@ class JobConfiguration(abc.ABC):
             "configuration_class": self.__class__.__name__,
             "format_version": self.FORMAT_VERSION,
             "user_data": self._user_data,
-            "submission_groups": [x.dict() for x in self.submission_groups],
+            "submission_groups": [x.model_dump() for x in self.submission_groups],
             "setup_command": self.setup_command,
             "teardown_command": self.teardown_command,
             "node_setup_command": self.node_setup_command,
