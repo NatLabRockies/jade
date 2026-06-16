@@ -2,12 +2,6 @@
 Unit tests for resubmitting failed and missing jobs
 """
 
-import os
-import shutil
-from pathlib import Path
-
-import pytest
-
 from jade.common import RESULTS_FILE
 from jade.extensions.generic_command import GenericCommandInputs
 from jade.extensions.generic_command import GenericCommandConfiguration
@@ -18,79 +12,64 @@ from jade.utils.subprocess_manager import run_command, check_run_command
 from jade.utils.utils import load_data, dump_data
 
 
-TEST_FILENAME = "test-inputs.txt"
-CONFIG_FILE = "test-config.json"
-SG_FILE = "test-submission-groups.json"
-OUTPUT = "test-output"
 SUBMIT_JOBS = f"jade submit-jobs -h {FAKE_HPC_CONFIG} -R none"
 RESUBMIT_JOBS = "jade resubmit-jobs"
 WAIT = "jade wait"
 NUM_COMMANDS = 5
 
 
-@pytest.fixture
-def cleanup():
-    _do_cleanup()
+def _create_config(tmp_path):
     commands = ['echo "hello world"'] * NUM_COMMANDS
-    with open(TEST_FILENAME, "w") as f_out:
+    inputs_file = tmp_path / "test-inputs.txt"
+    with open(inputs_file, "w") as f_out:
         for command in commands:
             f_out.write(command + "\n")
 
-    inputs = GenericCommandInputs(TEST_FILENAME)
+    inputs = GenericCommandInputs(str(inputs_file))
     config = GenericCommandConfiguration.auto_config(inputs)
-    config.dump(CONFIG_FILE)
-    yield
-    _do_cleanup()
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
+    return config_file
 
 
-@pytest.fixture
-def basic_setup():
-    _do_cleanup()
-    yield
-    _do_cleanup()
-
-
-def _do_cleanup():
-    for path in (TEST_FILENAME, CONFIG_FILE, OUTPUT, SG_FILE):
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        elif os.path.exists(path):
-            os.remove(path)
-
-
-def test_resubmit_successful(cleanup):
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -p 0.1"
+def test_resubmit_successful(tmp_path):
+    config_file = _create_config(tmp_path)
+    output = tmp_path / "test-output"
+    sg_file = tmp_path / "test-submission-groups.json"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -p 0.1"
     check_run_command(cmd)
-    check_run_command(f"{WAIT} --output={OUTPUT} -p 0.1 -t2")
-    summary = ResultsSummary(OUTPUT)
+    check_run_command(f"{WAIT} --output={output} -p 0.1 -t2")
+    summary = ResultsSummary(str(output))
     assert len(summary.get_failed_results()) == 0
     assert len(summary.get_successful_results()) == NUM_COMMANDS
 
-    check_run_command(f"jade config save-submission-groups {OUTPUT} -c {SG_FILE}")
-    groups = load_data(SG_FILE)
+    check_run_command(f"jade config save-submission-groups {output} -c {sg_file}")
+    groups = load_data(sg_file)
     assert groups[0]["submitter_params"]["per_node_batch_size"] > NUM_COMMANDS
     groups[0]["submitter_params"]["per_node_batch_size"] = NUM_COMMANDS
-    dump_data(groups, SG_FILE)
+    dump_data(groups, sg_file)
 
-    check_run_command(f"{RESUBMIT_JOBS} {OUTPUT} -s {SG_FILE} --successful")
-    check_run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
-    summary = ResultsSummary(OUTPUT)
+    check_run_command(f"{RESUBMIT_JOBS} {output} -s {sg_file} --successful")
+    check_run_command(f"{WAIT} --output={output} -p 0.1")
+    summary = ResultsSummary(str(output))
     assert len(summary.get_failed_results()) == 0
     assert len(summary.get_successful_results()) == NUM_COMMANDS
 
-    check_run_command(f"jade config save-submission-groups {OUTPUT} --force -c {SG_FILE}")
-    groups = load_data(SG_FILE)
+    check_run_command(f"jade config save-submission-groups {output} --force -c {sg_file}")
+    groups = load_data(sg_file)
     assert groups[0]["submitter_params"]["per_node_batch_size"] == NUM_COMMANDS
 
 
-def test_resubmit_failed(cleanup):
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -p 0.1"
+def test_resubmit_failed(tmp_path):
+    config_file = _create_config(tmp_path)
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -p 0.1"
     ret = run_command(cmd)
     assert ret == 0
-    ret = run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
+    ret = run_command(f"{WAIT} --output={output} -p 0.1")
     assert ret == 0
 
-    agg = ResultsAggregator.load(OUTPUT)
+    agg = ResultsAggregator.load(str(output))
     results = agg.get_results_unsafe()
     assert results
     for result in results:
@@ -99,33 +78,35 @@ def test_resubmit_failed(cleanup):
     results[0] = Result(x.name, 1, x.status, x.exec_time_s, x.completion_time, hpc_job_id=None)
     agg._write_results(results)
 
-    results_filename = os.path.join(OUTPUT, RESULTS_FILE)
+    results_filename = output / RESULTS_FILE
     final_results = load_data(results_filename)
     final_results["results"][0]["return_code"] = 1
     final_results["results_summary"]["num_failed"] = 1
     final_results["results_summary"]["num_successful"] -= 1
     dump_data(final_results, results_filename)
 
-    summary = ResultsSummary(OUTPUT)
+    summary = ResultsSummary(str(output))
     assert summary.get_failed_results()[0].name == "1"
 
-    ret = run_command(f"{RESUBMIT_JOBS} {OUTPUT}")
+    ret = run_command(f"{RESUBMIT_JOBS} {output}")
     assert ret == 0
-    ret = run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
+    ret = run_command(f"{WAIT} --output={output} -p 0.1")
     assert ret == 0
 
-    summary = ResultsSummary(OUTPUT)
+    summary = ResultsSummary(str(output))
     assert len(summary.get_successful_results()) == NUM_COMMANDS
 
 
-def test_resubmit_missing(cleanup):
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -p 0.1"
+def test_resubmit_missing(tmp_path):
+    config_file = _create_config(tmp_path)
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -p 0.1"
     ret = run_command(cmd)
     assert ret == 0
-    ret = run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
+    ret = run_command(f"{WAIT} --output={output} -p 0.1")
     assert ret == 0
 
-    agg = ResultsAggregator.load(OUTPUT)
+    agg = ResultsAggregator.load(str(output))
     results = agg.get_results_unsafe()
     assert results
     for result in results:
@@ -133,7 +114,7 @@ def test_resubmit_missing(cleanup):
     results.pop()
     agg._write_results(results)
 
-    results_filename = os.path.join(OUTPUT, RESULTS_FILE)
+    results_filename = output / RESULTS_FILE
     final_results = load_data(results_filename)
     missing = final_results["results"].pop()
     final_results["results_summary"]["num_missing"] = 1
@@ -141,27 +122,28 @@ def test_resubmit_missing(cleanup):
     final_results["missing_jobs"] = [missing["name"]]
     dump_data(final_results, results_filename)
 
-    summary = ResultsSummary(OUTPUT)
+    summary = ResultsSummary(str(output))
     assert len(summary.get_failed_results()) == 0
     assert len(summary.get_successful_results()) == NUM_COMMANDS - 1
 
-    ret = run_command(f"{RESUBMIT_JOBS} {OUTPUT}")
+    ret = run_command(f"{RESUBMIT_JOBS} {output}")
     assert ret == 0
-    ret = run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
+    ret = run_command(f"{WAIT} --output={output} -p 0.1")
     assert ret == 0
 
-    summary = ResultsSummary(OUTPUT)
+    summary = ResultsSummary(str(output))
     assert len(summary.get_successful_results()) == NUM_COMMANDS
 
 
-def test_resubmit_with_blocking_jobs(basic_setup):
+def test_resubmit_with_blocking_jobs(tmp_path):
     num_commands = 7
     commands = ['echo "hello world"'] * num_commands
-    with open(TEST_FILENAME, "w") as f_out:
+    inputs_file = tmp_path / "test-inputs.txt"
+    with open(inputs_file, "w") as f_out:
         for command in commands:
             f_out.write(command + "\n")
 
-    inputs = GenericCommandInputs(TEST_FILENAME)
+    inputs = GenericCommandInputs(str(inputs_file))
     config = GenericCommandConfiguration(job_inputs=inputs)
     jobs = list(inputs.iter_jobs())
     # Set an inefficient ordering to make sure the resubmit algorithm is recursive.
@@ -173,14 +155,16 @@ def test_resubmit_with_blocking_jobs(basic_setup):
         elif i == 6:
             job_param.blocked_by = set([6])
         config.add_job(job_param)
-    config.dump(CONFIG_FILE)
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT}"
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output}"
     ret = run_command(cmd)
     assert ret == 0
-    ret = run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
+    ret = run_command(f"{WAIT} --output={output} -p 0.1")
     assert ret == 0
 
-    agg = ResultsAggregator.load(OUTPUT)
+    agg = ResultsAggregator.load(str(output))
     results = agg.get_results_unsafe()
     assert results
     for result in results:
@@ -194,7 +178,7 @@ def test_resubmit_with_blocking_jobs(basic_setup):
     assert found
     agg._write_results(results)
 
-    results_filename = os.path.join(OUTPUT, RESULTS_FILE)
+    results_filename = output / RESULTS_FILE
     final_results = load_data(results_filename)
     missing = None
     for i, result in enumerate(final_results["results"]):
@@ -208,21 +192,21 @@ def test_resubmit_with_blocking_jobs(basic_setup):
     final_results["missing_jobs"] = [missing["name"]]
     dump_data(final_results, results_filename)
 
-    summary = ResultsSummary(OUTPUT)
+    summary = ResultsSummary(str(output))
     assert len(summary.get_failed_results()) == 0
     assert len(summary.get_successful_results()) == num_commands - 1
-    first_batch = load_data(Path(OUTPUT) / "config_batch_1.json")
+    first_batch = load_data(output / "config_batch_1.json")
     assert len(first_batch["jobs"]) == num_commands
 
-    ret = run_command(f"{RESUBMIT_JOBS} {OUTPUT}")
+    ret = run_command(f"{RESUBMIT_JOBS} {output}")
     assert ret == 0
-    ret = run_command(f"{WAIT} --output={OUTPUT} -p 0.1")
+    ret = run_command(f"{WAIT} --output={output} -p 0.1")
     assert ret == 0
 
-    summary = ResultsSummary(OUTPUT)
+    summary = ResultsSummary(str(output))
     assert len(summary.get_successful_results()) == num_commands
 
-    second_batch_file = Path(OUTPUT) / "config_batch_2.json"
+    second_batch_file = output / "config_batch_2.json"
     assert second_batch_file.exists()
     second_batch = load_data(second_batch_file)["jobs"]
     assert len(second_batch) == 3

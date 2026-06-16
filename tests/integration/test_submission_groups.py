@@ -1,11 +1,6 @@
 """Unit tests for submission groups"""
 
 import copy
-import os
-import shutil
-from pathlib import Path
-
-import pytest
 
 from jade.extensions.generic_command import GenericCommandInputs
 from jade.extensions.generic_command import GenericCommandConfiguration
@@ -17,87 +12,84 @@ from jade.utils.run_command import check_run_command, run_command
 from jade.utils.utils import load_data
 
 
-TEST_FILENAME = "test-inputs.txt"
-CONFIG_FILE = "test-config.json"
-OUTPUT = "test-output"
 SUBMIT_JOBS = "jade submit-jobs -R none"
 
 
-@pytest.fixture
-def cleanup():
-    yield
-    for path in (TEST_FILENAME, CONFIG_FILE, OUTPUT):
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        elif os.path.exists(path):
-            os.remove(path)
+def test_submission_groups(tmp_path):
+    config = create_config(tmp_path)
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
 
-
-def test_submission_groups(cleanup):
-    config = create_config()
-    config.dump(CONFIG_FILE)
-
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -h {FAKE_HPC_CONFIG} -p 0.1"
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -h {FAKE_HPC_CONFIG} -p 0.1"
     check_run_command(cmd)
 
-    output_path = Path(OUTPUT)
-    config_batch_files = list(output_path.glob("config_batch*.json"))
+    config_batch_files = list(output.glob("config_batch*.json"))
     assert len(config_batch_files) == 3
-    batch1 = load_data(output_path / "config_batch_1.json")
+    batch1 = load_data(output / "config_batch_1.json")
     assert len(batch1["jobs"]) == 3
-    batch2 = load_data(output_path / "config_batch_2.json")
+    batch2 = load_data(output / "config_batch_2.json")
     assert len(batch2["jobs"]) == 1
     assert batch2["jobs"][0]["job_id"] == 4
-    batch3 = load_data(output_path / "config_batch_3.json")
+    batch3 = load_data(output / "config_batch_3.json")
     assert len(batch3["jobs"]) == 1
     assert batch3["jobs"][0]["job_id"] == 5
 
 
-def test_submission_groups_duplicate_name(cleanup):
-    config = create_config()
+def test_submission_groups_duplicate_name(tmp_path):
+    config = create_config(tmp_path)
     config.submission_groups[0].name = config.submission_groups[1].name
-    config.dump(CONFIG_FILE)
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -h {FAKE_HPC_CONFIG} --dry-run"
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -h {FAKE_HPC_CONFIG} --dry-run"
     assert run_command(cmd) != 0
 
 
-def test_submission_groups_mixed_hpc_types(cleanup):
-    config = create_config()
+def test_submission_groups_mixed_hpc_types(tmp_path):
+    config = create_config(tmp_path)
     config.submission_groups[0].submitter_params.hpc_config.hpc_type = HpcType.SLURM
-    config.dump(CONFIG_FILE)
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -h {FAKE_HPC_CONFIG} --dry-run"
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -h {FAKE_HPC_CONFIG} --dry-run"
     assert run_command(cmd) != 0
 
 
-def test_submission_groups_mixed_max_nodes(cleanup):
-    config = create_config()
+def test_submission_groups_mixed_max_nodes(tmp_path):
+    config = create_config(tmp_path)
     config.submission_groups[0].submitter_params.max_nodes = 5
-    config.dump(CONFIG_FILE)
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -h {FAKE_HPC_CONFIG} --dry-run"
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -h {FAKE_HPC_CONFIG} --dry-run"
     assert run_command(cmd) != 0
 
 
-def test_submission_groups_per_node_setup(cleanup):
+def test_submission_groups_per_node_setup(tmp_path):
     # TODO: this test is no longer in the right place. Belongs in file testing job_config.
-    config = create_config()
+    config = create_config(tmp_path)
     config.node_setup_command = "node_setup.sh"
     config.node_teardown_command = "node_teardown.sh"
-    config.dump(CONFIG_FILE)
-    cmd = f"{SUBMIT_JOBS} {CONFIG_FILE} --output={OUTPUT} -h {FAKE_HPC_CONFIG} --dry-run"
+    config_file = tmp_path / "test-config.json"
+    config.dump(str(config_file))
+    output = tmp_path / "test-output"
+    cmd = f"{SUBMIT_JOBS} {config_file} --output={output} -h {FAKE_HPC_CONFIG} --dry-run"
     check_run_command(cmd)
-    config = create_config_from_file(Path(OUTPUT) / "config_batch_2.json")
+    config = create_config_from_file(output / "config_batch_2.json")
     assert config.node_setup_command == "node_setup.sh"
     assert config.node_teardown_command == "node_teardown.sh"
 
 
-def create_config():
+def create_config(tmp_path):
     num_commands = 5
     commands = ['echo "hello world"'] * num_commands
-    with open(TEST_FILENAME, "w") as f_out:
+    inputs_file = tmp_path / "test-inputs.txt"
+    with open(inputs_file, "w") as f_out:
         for command in commands:
             f_out.write(command + "\n")
 
-    inputs = GenericCommandInputs(TEST_FILENAME)
+    inputs = GenericCommandInputs(str(inputs_file))
     config = GenericCommandConfiguration(job_inputs=inputs)
     jobs = list(inputs.iter_jobs())
     for i, job_param in enumerate(jobs):

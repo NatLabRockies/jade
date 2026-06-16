@@ -7,8 +7,8 @@ name = "NREL-jade"
 dynamic = ["version"]
 description = "Provides HPC workflow automation services"
 readme = "README.md"
-icense = {file = "LICENSE"}
-requires-python = ">=3.7"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
 maintainers = [
     { name = "Daniel Thom", email = "daniel.thom@nrel.gov" },
 ]
@@ -21,7 +21,7 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "click",
@@ -32,7 +32,7 @@ dependencies = [
     "prettytable",
     "psutil",
     "pyarrow",
-    "pydantic~=2.5.2",
+    "pydantic>=2,<3",
     "requests",
     "tabulate",
     "toml>=0.10.0",
