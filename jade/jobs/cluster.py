@@ -579,7 +579,7 @@ class Cluster:
             )
 
         # Check the hash before the version update.
-        if hash(self._job_status.json()) != self._config_hash:
+        if hash(self._job_status.json()) != self._job_status_hash:
             self._job_status.version += 1
             self._serialize_job_status_version()
             text = self._job_status.json()
