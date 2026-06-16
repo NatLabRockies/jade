@@ -1,0 +1,45 @@
+jade.models
+===========
+
+.. automodule:: jade.models
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      get_model_defaults
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   base
+   cluster_config
+   hpc
+   jobs
+   pipeline
+   singularity
+   spark
+   submission_group
+   submitter_params
+

@@ -1,0 +1,32 @@
+jade.extensions
+===============
+
+.. automodule:: jade.extensions
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   demo
+   generic_command
+   registry
+

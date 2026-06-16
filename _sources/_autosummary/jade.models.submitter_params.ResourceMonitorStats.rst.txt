@@ -1,0 +1,64 @@
+jade.models.submitter\_params.ResourceMonitorStats
+==================================================
+
+.. currentmodule:: jade.models.submitter_params
+
+.. autoclass:: ResourceMonitorStats
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ResourceMonitorStats.construct
+      ~ResourceMonitorStats.copy
+      ~ResourceMonitorStats.dict
+      ~ResourceMonitorStats.from_orm
+      ~ResourceMonitorStats.json
+      ~ResourceMonitorStats.load
+      ~ResourceMonitorStats.model_construct
+      ~ResourceMonitorStats.model_copy
+      ~ResourceMonitorStats.model_dump
+      ~ResourceMonitorStats.model_dump_json
+      ~ResourceMonitorStats.model_json_schema
+      ~ResourceMonitorStats.model_parametrized_name
+      ~ResourceMonitorStats.model_post_init
+      ~ResourceMonitorStats.model_rebuild
+      ~ResourceMonitorStats.model_validate
+      ~ResourceMonitorStats.model_validate_json
+      ~ResourceMonitorStats.model_validate_strings
+      ~ResourceMonitorStats.parse_file
+      ~ResourceMonitorStats.parse_obj
+      ~ResourceMonitorStats.parse_raw
+      ~ResourceMonitorStats.schema
+      ~ResourceMonitorStats.schema_json
+      ~ResourceMonitorStats.update_forward_refs
+      ~ResourceMonitorStats.validate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ResourceMonitorStats.model_computed_fields
+      ~ResourceMonitorStats.model_config
+      ~ResourceMonitorStats.model_extra
+      ~ResourceMonitorStats.model_fields
+      ~ResourceMonitorStats.model_fields_set
+      ~ResourceMonitorStats.cpu
+      ~ResourceMonitorStats.disk
+      ~ResourceMonitorStats.memory
+      ~ResourceMonitorStats.network
+      ~ResourceMonitorStats.process
+      ~ResourceMonitorStats.include_child_processes
+      ~ResourceMonitorStats.recurse_child_processes
+   
+   

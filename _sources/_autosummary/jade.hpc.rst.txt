@@ -1,0 +1,37 @@
+jade.hpc
+========
+
+.. automodule:: jade.hpc
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   common
+   fake_manager
+   hpc_manager
+   hpc_manager_interface
+   hpc_submitter
+   local_manager
+   pbs_manager
+   slurm_manager
+

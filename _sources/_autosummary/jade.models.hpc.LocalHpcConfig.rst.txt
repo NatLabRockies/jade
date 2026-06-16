@@ -1,0 +1,57 @@
+jade.models.hpc.LocalHpcConfig
+==============================
+
+.. currentmodule:: jade.models.hpc
+
+.. autoclass:: LocalHpcConfig
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LocalHpcConfig.construct
+      ~LocalHpcConfig.copy
+      ~LocalHpcConfig.dict
+      ~LocalHpcConfig.from_orm
+      ~LocalHpcConfig.json
+      ~LocalHpcConfig.load
+      ~LocalHpcConfig.model_construct
+      ~LocalHpcConfig.model_copy
+      ~LocalHpcConfig.model_dump
+      ~LocalHpcConfig.model_dump_json
+      ~LocalHpcConfig.model_json_schema
+      ~LocalHpcConfig.model_parametrized_name
+      ~LocalHpcConfig.model_post_init
+      ~LocalHpcConfig.model_rebuild
+      ~LocalHpcConfig.model_validate
+      ~LocalHpcConfig.model_validate_json
+      ~LocalHpcConfig.model_validate_strings
+      ~LocalHpcConfig.parse_file
+      ~LocalHpcConfig.parse_obj
+      ~LocalHpcConfig.parse_raw
+      ~LocalHpcConfig.schema
+      ~LocalHpcConfig.schema_json
+      ~LocalHpcConfig.update_forward_refs
+      ~LocalHpcConfig.validate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LocalHpcConfig.model_computed_fields
+      ~LocalHpcConfig.model_config
+      ~LocalHpcConfig.model_extra
+      ~LocalHpcConfig.model_fields
+      ~LocalHpcConfig.model_fields_set
+   
+   

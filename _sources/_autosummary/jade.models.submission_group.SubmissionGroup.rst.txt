@@ -1,0 +1,59 @@
+jade.models.submission\_group.SubmissionGroup
+=============================================
+
+.. currentmodule:: jade.models.submission_group
+
+.. autoclass:: SubmissionGroup
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SubmissionGroup.construct
+      ~SubmissionGroup.copy
+      ~SubmissionGroup.dict
+      ~SubmissionGroup.from_orm
+      ~SubmissionGroup.json
+      ~SubmissionGroup.load
+      ~SubmissionGroup.model_construct
+      ~SubmissionGroup.model_copy
+      ~SubmissionGroup.model_dump
+      ~SubmissionGroup.model_dump_json
+      ~SubmissionGroup.model_json_schema
+      ~SubmissionGroup.model_parametrized_name
+      ~SubmissionGroup.model_post_init
+      ~SubmissionGroup.model_rebuild
+      ~SubmissionGroup.model_validate
+      ~SubmissionGroup.model_validate_json
+      ~SubmissionGroup.model_validate_strings
+      ~SubmissionGroup.parse_file
+      ~SubmissionGroup.parse_obj
+      ~SubmissionGroup.parse_raw
+      ~SubmissionGroup.schema
+      ~SubmissionGroup.schema_json
+      ~SubmissionGroup.update_forward_refs
+      ~SubmissionGroup.validate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SubmissionGroup.model_computed_fields
+      ~SubmissionGroup.model_config
+      ~SubmissionGroup.model_extra
+      ~SubmissionGroup.model_fields
+      ~SubmissionGroup.model_fields_set
+      ~SubmissionGroup.name
+      ~SubmissionGroup.submitter_params
+   
+   

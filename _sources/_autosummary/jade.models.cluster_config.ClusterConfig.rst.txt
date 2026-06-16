@@ -1,0 +1,67 @@
+jade.models.cluster\_config.ClusterConfig
+=========================================
+
+.. currentmodule:: jade.models.cluster_config
+
+.. autoclass:: ClusterConfig
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ClusterConfig.construct
+      ~ClusterConfig.copy
+      ~ClusterConfig.dict
+      ~ClusterConfig.from_orm
+      ~ClusterConfig.json
+      ~ClusterConfig.load
+      ~ClusterConfig.model_construct
+      ~ClusterConfig.model_copy
+      ~ClusterConfig.model_dump
+      ~ClusterConfig.model_dump_json
+      ~ClusterConfig.model_json_schema
+      ~ClusterConfig.model_parametrized_name
+      ~ClusterConfig.model_post_init
+      ~ClusterConfig.model_rebuild
+      ~ClusterConfig.model_validate
+      ~ClusterConfig.model_validate_json
+      ~ClusterConfig.model_validate_strings
+      ~ClusterConfig.parse_file
+      ~ClusterConfig.parse_obj
+      ~ClusterConfig.parse_raw
+      ~ClusterConfig.schema
+      ~ClusterConfig.schema_json
+      ~ClusterConfig.update_forward_refs
+      ~ClusterConfig.validate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ClusterConfig.model_computed_fields
+      ~ClusterConfig.model_config
+      ~ClusterConfig.model_extra
+      ~ClusterConfig.model_fields
+      ~ClusterConfig.model_fields_set
+      ~ClusterConfig.submitter
+      ~ClusterConfig.submission_groups
+      ~ClusterConfig.path
+      ~ClusterConfig.pipeline_stage_num
+      ~ClusterConfig.num_jobs
+      ~ClusterConfig.submitted_jobs
+      ~ClusterConfig.completed_jobs
+      ~ClusterConfig.is_complete
+      ~ClusterConfig.is_canceled
+      ~ClusterConfig.version
+   
+   

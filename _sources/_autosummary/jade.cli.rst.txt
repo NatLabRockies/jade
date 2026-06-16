@@ -1,0 +1,55 @@
+jade.cli
+========
+
+.. automodule:: jade.cli
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   auto_config
+   cancel_jobs
+   cluster
+   collect_stats
+   common
+   config
+   db
+   extensions
+   hpc_jobs
+   jade
+   jade_internal
+   pipeline
+   prune_files
+   resubmit_jobs
+   run
+   run_jobs
+   run_multi_node_job
+   run_spark_cluster
+   show_events
+   show_results
+   show_status
+   spark
+   stats
+   submit_jobs
+   try_submit_jobs
+   wait
+

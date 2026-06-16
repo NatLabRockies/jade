@@ -1,0 +1,37 @@
+jade.utils
+==========
+
+.. automodule:: jade.utils
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   custom_click_options
+   dataframe_utils
+   repository_info
+   run_command
+   sql
+   subprocess_manager
+   timing_utils
+   utils
+
