@@ -7,7 +7,7 @@ name = "NREL-jade"
 dynamic = ["version"]
 description = "Provides HPC workflow automation services"
 readme = "README.md"
-icense = {file = "LICENSE"}
+license = {file = "LICENSE"}
 requires-python = ">=3.10"
 maintainers = [
     { name = "Daniel Thom", email = "daniel.thom@nrel.gov" },
