@@ -74,7 +74,7 @@ class SlurmConfig(JadeBaseModel):
             return gres
         if re.search(r"^gpu:(\d+)$", gres) is None:
             raise ValueError(
-                "gres value must follow the format 'gres=gpu:N' where N is the number of required GPUs"
+                "gres value must follow the format 'gpu:N' where N is the number of required GPUs"
             )
         return gres
 
@@ -129,7 +129,9 @@ class HpcConfig(JadeBaseModel):
         if isinstance(value, JadeBaseModel):
             return value
 
-        hpc_type = info.data["hpc_type"]
+        hpc_type = info.data.get("hpc_type")
+        if hpc_type is None:
+            raise ValueError("'hpc_type' is required to validate 'hpc'")
         if hpc_type == HpcType.SLURM:
             return SlurmConfig(**value)
         elif hpc_type == HpcType.FAKE:

@@ -5,7 +5,7 @@ from collections import namedtuple
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_serializer
 
 from jade.models import JadeBaseModel
 from jade.models.spark import SparkConfigModel, SparkContainerModel
@@ -185,11 +185,17 @@ class GenericCommandParametersModel(JadeBaseModel):
     @field_validator("blocked_by", mode="before")
     @classmethod
     def handle_blocked_by(cls, value):
-        return {str(x) for x in value}
+        # Coerce sequence elements (e.g. integer job ids) to strings. Leave non-sequence input
+        # untouched so Pydantic raises its normal validation error instead of splitting a string.
+        if isinstance(value, (list, tuple, set, frozenset)):
+            return {str(x) for x in value}
+        return value
 
-    def model_dump(self, *args, **kwargs):
-        data = super().model_dump(*args, **kwargs)
-        # Keep the config file smaller by skipping values that are defaults.
+    @model_serializer(mode="wrap")
+    def _serialize(self, handler):
+        # Keep the config file smaller by skipping values that are defaults. Using a
+        # model_serializer ensures this applies across all Pydantic v2 serialization paths.
+        data = handler(self)
         for field in (
             "use_multi_node_manager",
             "spark_config",

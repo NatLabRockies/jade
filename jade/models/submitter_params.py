@@ -4,7 +4,7 @@ import re
 from datetime import timedelta
 from typing import Optional
 
-from pydantic import Field
+from pydantic import Field, model_serializer
 
 from jade.enums import ResourceMonitorType
 from jade.models import JadeBaseModel, HpcConfig, SingularityParams
@@ -132,8 +132,12 @@ class SubmitterParams(JadeBaseModel):
             return timedelta(seconds=0xFFFFFFFF)  # largest 8-byte integer
         return _to_timedelta(wall_time)
 
-    def model_dump(self, *args, **kwargs):
-        data = super().model_dump(*args, **kwargs)
+    @model_serializer(mode="wrap")
+    def _serialize(self, handler):
+        # Drop the obsolete script fields when unset. Using a model_serializer (rather than
+        # overriding model_dump) ensures this applies across model_dump, model_dump_json, and
+        # nested serialization in Pydantic v2.
+        data = handler(self)
         if data.get("node_setup_script") is None:
             data.pop("node_setup_script", None)
         if data.get("node_shutdown_script") is None:
