@@ -2,7 +2,7 @@
 
 import os
 
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 import pytest
 
 from jade.common import OUTPUT_DIR
@@ -52,7 +52,7 @@ def hpc_config(hpc_type, **kwargs):
 def test_create_slurm():
     create_hpc_manager("slurm")
     config = hpc_config("slurm")
-    bad_config = config.dict()
+    bad_config = config.model_dump()
     bad_config["hpc"].pop("account")
     with pytest.raises(ValidationError):
         HpcConfig(**bad_config)

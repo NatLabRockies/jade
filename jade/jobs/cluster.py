@@ -249,7 +249,7 @@ class Cluster:
         }
 
         if include_jobs:
-            summary["job_status"] = self._job_status.dict()
+            summary["job_status"] = self._job_status.model_dump()
 
         return summary
 
@@ -366,7 +366,7 @@ class Cluster:
 
         """
         path = directory / self.SUBMITTER_GROUP_FILE
-        data = [x.dict() for x in self._config.submission_groups]
+        data = [x.model_dump() for x in self._config.submission_groups]
         dump_data(data, path, cls=ExtendedJSONEncoder)
 
     @staticmethod
@@ -558,12 +558,12 @@ class Cluster:
             )
 
         # Check the hash before the version update.
-        if hash(self._config.json()) != self._config_hash:
+        if hash(self._config.model_dump_json()) != self._config_hash:
             self._config.version += 1
             self._serialize_config_version()
-            text = self._config.json()
+            text = self._config.model_dump_json()
             self._config_hash = hash(text)
-            self._serialize_file(self._config.json(), self._config_file)
+            self._serialize_file(text, self._config_file)
             logger.info(
                 "Wrote config version %s reason=%s hostname=%s",
                 self._config.version,
@@ -579,10 +579,10 @@ class Cluster:
             )
 
         # Check the hash before the version update.
-        if hash(self._job_status.json()) != self._job_status_hash:
+        if hash(self._job_status.model_dump_json()) != self._job_status_hash:
             self._job_status.version += 1
             self._serialize_job_status_version()
-            text = self._job_status.json()
+            text = self._job_status.model_dump_json()
             self._serialize_file(text, self._job_status_file)
             self._job_status_hash = hash(text)
             logger.info(

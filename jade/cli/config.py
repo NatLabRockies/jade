@@ -251,7 +251,7 @@ def hpc(account, config_file, mem, partition, qos, hpc_type, tmp, walltime):
         hpc = LocalHpcConfig()
 
     # This converts enums to values.
-    data = json.loads(HpcConfig(hpc_type=hpc_type, hpc=hpc).json())
+    data = json.loads(HpcConfig(hpc_type=hpc_type, hpc=hpc).model_dump_json())
     dump_data(data, config_file)
     print(f"Created HPC config file {config_file}")
 
@@ -478,7 +478,7 @@ def submitter_params(
         no_distributed_submitter=no_distributed_submitter,
     )
     # This converts enums to values.
-    data = json.loads(params.json())
+    data = json.loads(params.model_dump_json())
     if config_file.suffix == ".json":
         dump_data(data, config_file, indent=2)
     else:

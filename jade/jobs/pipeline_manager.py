@@ -131,7 +131,7 @@ class PipelineManager:
 
         config = PipelineConfig(stages=stages, stage_num=1)
         with open(pipeline_config_file, "w") as f_out:
-            f_out.write(config.json(indent=2))
+            f_out.write(config.model_dump_json(indent=2))
         logger.info("Created pipeline config file %s", pipeline_config_file)
 
     @staticmethod
@@ -164,16 +164,15 @@ class PipelineManager:
 
         config = PipelineConfig(stages=stages, stage_num=1)
         with open(pipeline_config_file, "w") as f_out:
-            f_out.write(config.json(indent=2))
+            f_out.write(config.model_dump_json(indent=2))
         logger.info("Created pipeline config file %s", pipeline_config_file)
 
     def _deserialize(self):
         return PipelineConfig(**load_data(self._config_file))
 
     def _serialize(self):
-        print(self.stage_num)
         with open(self._config_file, "w") as f_out:
-            f_out.write(self._config.json(indent=2))
+            f_out.write(self._config.model_dump_json(indent=2))
 
     def _submit_next_stage(self, stage_num, return_code=None):
         if return_code is None:

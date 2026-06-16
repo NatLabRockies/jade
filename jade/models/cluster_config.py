@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from jade.models import JadeBaseModel, SubmissionGroup
 
@@ -26,6 +26,7 @@ class ClusterConfig(JadeBaseModel):
     pipeline_stage_num: Optional[int] = Field(
         title="pipeline_stage_num",
         description="stage number if the config is part of a pipeline",
+        default=None,
     )
     num_jobs: int = Field(
         title="num_jobs",

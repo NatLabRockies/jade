@@ -16,7 +16,7 @@ import sys
 from dateutil.parser import parse
 
 import toml
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from jade.exceptions import InvalidParameter
 from jade.utils.timing_utils import timed_debug
@@ -518,6 +518,6 @@ class ExtendedJSONEncoder(json.JSONEncoder):
             return list(obj)
 
         if isinstance(obj, BaseModel):
-            return obj.dict()
+            return obj.model_dump()
 
         return json.JSONEncoder.default(self, obj)
