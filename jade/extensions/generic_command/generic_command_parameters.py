@@ -197,6 +197,9 @@ class GenericCommandParametersModel(JadeBaseModel):
             "append_output_dir",
             "ext",
         ):
-            if data[field] == GenericCommandParametersModel.model_fields[field].default:
+            if (
+                field in data
+                and data[field] == GenericCommandParametersModel.model_fields[field].default
+            ):
                 data.pop(field)
         return data

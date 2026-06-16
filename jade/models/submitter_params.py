@@ -134,10 +134,10 @@ class SubmitterParams(JadeBaseModel):
 
     def model_dump(self, *args, **kwargs):
         data = super().model_dump(*args, **kwargs)
-        if data["node_setup_script"] is None:
-            data.pop("node_setup_script")
-        if data["node_shutdown_script"] is None:
-            data.pop("node_shutdown_script")
+        if data.get("node_setup_script") is None:
+            data.pop("node_setup_script", None)
+        if data.get("node_shutdown_script") is None:
+            data.pop("node_shutdown_script", None)
         return data
 
 

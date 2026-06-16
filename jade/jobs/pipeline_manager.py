@@ -171,7 +171,6 @@ class PipelineManager:
         return PipelineConfig(**load_data(self._config_file))
 
     def _serialize(self):
-        print(self.stage_num)
         with open(self._config_file, "w") as f_out:
             f_out.write(self._config.model_dump_json(indent=2))
 

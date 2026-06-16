@@ -563,7 +563,7 @@ class Cluster:
             self._serialize_config_version()
             text = self._config.model_dump_json()
             self._config_hash = hash(text)
-            self._serialize_file(self._config.model_dump_json(), self._config_file)
+            self._serialize_file(text, self._config_file)
             logger.info(
                 "Wrote config version %s reason=%s hostname=%s",
                 self._config.version,
